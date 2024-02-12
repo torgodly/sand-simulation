@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="grid">
+            <div v-for="row in Rows" :key="row" class="row">
+                <!-- Add @click="setDrop(row, column)" to make cell clickable -->
+                <div v-for="column in Columns" :key="column" class="cell 0" :id="getCellId(row, column)"
+                    @mouseover="setDrop(row, column)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue
+
+        createApp({
+            setup() {
+                const Columns = 200
+                const Rows = 200
+                // /set random drops
+
+                function setRandomDrops() {
+                    let randomRow = Math.floor(Math.random() * Rows);
+                    let randomColumn = Math.floor(Math.random() * Columns);
+                    setDrop(randomRow, randomColumn);
+                }
+
+                // Generate a unique ID for each cell
+                const getCellId = (row, column) => `cell-${row}-${column}`
+                const getCell = (row, column) => document.getElementById(`cell-${row}-${column}`)
+
+                const setDrop = (row, column) => {
+                    const cell = getCell(row, column);
+                    cell.classList.replace('0', '1'); // Update cell content
+                    animateCells(row, column); // Call the animation function
+
+                };
+
+                //reandm color
+
+                function getRandomColor() {
+                    var letters = '0123456789ABCDEF';
+                    var color = '#';
+                    for (var i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                    }
+                    return color;
+                }
+
+                function delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+
+                async function animateCells(r, c) {
+                    console.log('animateCells', r, c);
+                    for (let column = c; column <= Columns; column++) { // Adjusted loop to include last column
+                        for (let row = r; row < Rows; row++) {
+                            await delay(0); // Adjust delay time (ms) as needed
+                            let cell = getCell(row, column);
+                            let cell2 = getCell(row + 1, column);
+                            let cellLeft = getCell(row, column - 1);
+                            let cellRight = getCell(row, column + 1);
+                            if (cell && cell2 && cell.classList.contains('1') && cell2.classList.contains('0')) {
+                                cell.classList.replace('1', '0');
+                                cell2.classList.replace('0', '1');
+                                cell2.style.backgroundColor = '#C2B280';
+                                cell.style.backgroundColor = 'transparent';
+                            }else if (cell && cell2 && cell.classList.contains('1') && cell2.classList.contains('1') && cellLeft && cellLeft.classList.contains('0')) {
+                                cell.classList.replace('1', '0');
+                                cellLeft.classList.replace('0', '1');
+                                cellLeft.style.backgroundColor = '#C2B280';
+                                cell.style.backgroundColor = 'transparent';
+                            }else if (cell && cell2 && cell.classList.contains('1') && cell2.classList.contains('1') && cellRight && cellRight.classList.contains('0')) {
+                                cell.classList.replace('1', '0');
+                                cellRight.classList.replace('0', '1');
+                                cellRight.style.backgroundColor = '#C2B280';
+                                cell.style.backgroundColor = 'transparent';
+                            }
+                        }
+                    }
+                }
+
+                onMounted(() => {
+                });
+
+                // Make sure to return setDrop here along with any other properties or methods you want to use in the template
+                return {
+                    Columns,
+                    Rows,
+                    getCellId,
+                    setDrop, // Ensure setDrop is returned here
+                }
+            }
+        }).mount('#app')
+    </script>
+
+
+</body>
+
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .grid {
+        /* width: 6600; */
+        border: 1px solid #000;
+        display: grid;
+        grid-template-columns: repeat(500, 3px);
+        grid-template-rows: repeat(500, 3px);
+    }
+
+    .grid {
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    .row {
+
+        display: flex;
+    }
+
+    .cell {
+        width: 3px;
+        height: 3px;
+    }
+</style>
+
+</html>
