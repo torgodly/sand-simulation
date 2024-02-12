@@ -13,7 +13,7 @@
         <div class="grid">
             <div v-for="row in Rows" :key="row" class="row">
                 <!-- Add @click="setDrop(row, column)" to make cell clickable -->
-                <div v-for="column in Columns" :key="column" class="cell 0" :id="getCellId(row, column)"
+                <div v-for="column in Columns" :key="column" class="cell 0" :id="getCellId(row, column)" @touchmove="setDrop(row, column)"      
                     @mouseover="setDrop(row, column)">
                 </div>
             </div>
@@ -90,8 +90,7 @@
                     }
                 }
 
-                onMounted(() => {
-                });
+              
 
                 // Make sure to return setDrop here along with any other properties or methods you want to use in the template
                 return {
